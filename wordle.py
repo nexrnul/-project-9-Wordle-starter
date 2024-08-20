@@ -1,5 +1,6 @@
 # TASK A: Define a variable 'word' that holds the correct word for the wordle game
 word = "water"
+word = "crazy"
 
 # TASK B: Define a function 'makeAGuess()' that passes in a users guess as a parameter
 
