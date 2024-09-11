@@ -1,70 +1,37 @@
 from tabulate import tabulate
-import pandas as pd
-
+from player import Player
 
 class Character:
-
-
-   def __init__(self, skill_class, name, strength, health, inventory, exp=1):
-       self.skill_class = skill_class
-       self.name = name
-       self.health = health
-       self.exp = exp
-       self.strength = strength
-       self.inventory = inventory
-
-
-   def introduction(self):
-        data = [
-            ["Mage", 60, 8, 2],
-            ["Ranger", 80, 6, 4],
-            ["Cleric", 100, 4, 3]]
-        headers = ["Class", "Health:", "Strength:", "Experience rate:"]
+    def introduction(self):
+        data = [["Mage", 60, 8, 2],
+                ["Ranger", 80, 6, 4]]
+        headers = ["Class", "Health:", "Strength:"]
         table = tabulate(data, headers=headers, tablefmt="psql", numalign="center")
         print(table)
-        valid_classes = ['mage', 'ranger', 'cleric', 'Mage', 'Ranger', 'Cleric']
+
+        valid_classes = ['mage', 'ranger']
         while True:
-            class_determination = input("Select your class:").lower()
-            if class_determination in valid_classes:
-                break
-            print("Invalid class. Please select from mage, ranger, or cleric.")      
-        self.skill_class = class_determination    
-        #print(f"My name is {self.name} and I am of the {self.skill_class} class.")
+            class_input = input("Select your class:").lower()
+            if class_input in valid_classes:
+                return class_input
+            else:
+                print("Invalid class. Please select from mage or ranger.")     
+         
+def create_player():
+    temp_character = Character()
+    skill_class = temp_character.introduction()
 
+    if skill_class == 'mage':
+        player = Player('Sora the Mystic', 'mage')
+        player.health=60
+        player.strength=8
 
-   def attack(self):
-       print(f"{self.name} attacks for {self.strength*10} damage!")
- 
-   def take_damage(self, damage):
-       self.health -= damage
-       if self.health <= 0:
-           print(f"{self.name} has been defeated!")
-       else:
-           print(f"{self.name} has {self.health} health remaining.")
+    elif skill_class == 'ranger':
+        player = Player('Lirael, Wanderer of Waste', 'ranger')
+        player.health=80
+        player.strength=6
 
-    def exp_rate(self, exp):
-        self.exp_rate =
+    print(f"My name is {player.name} and I am of the {player.skill_class} class.")
+    return player
+player = create_player()
 
-    def experience(self, exp, )
-           
-class mage(Character):
-   def __init__(self, name, strength=8, health=60, exp=1):
-       super().__init__('mage', name, strength, health, exp)
-
-
-class ranger(Character):
-   def __init__(self, name, strength=6, health=80, exp=1):
-       super().__init__('ranger', name, strength, health, exp)
-
-
-class cleric(Character):
-   def __init__(self, name, strength=4, health=100, exp=1):
-       super().__init__('cleric', name, strength, health, exp)
-
-
-c1 = mage('A')
-#c2 = ranger('b')
-#c3 = cleric('c')
-c1.introduction()
-#c2.introduction()
-#c3.introduction()
