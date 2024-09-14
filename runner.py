@@ -13,6 +13,8 @@ print("You may go north towards the mountains, continue west entering the forest
 
 print("You venture north, the air growing colder as you ascend the mountain.")
 
+scene1 = TravelS("You may go north towards the mountains, continue west entering the forest, or travel east towards the glacier", ["North", "West", "East"])
+scene2
 
 
 
