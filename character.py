@@ -16,7 +16,7 @@ class Character:
                 return class_input
             else:
                 print("Invalid class. Please select from mage or ranger.")     
-         
+        
 def create_player():
     temp_character = Character()
     skill_class = temp_character.introduction()
@@ -31,7 +31,5 @@ def create_player():
         player.health=80
         player.strength=6
 
-    print(f"My name is {player.name} and I am of the {player.skill_class} class.")
+    print(f""" "My name is {player.name} and I am of the {player.skill_class} class." """)
     return player
-player = create_player()
-

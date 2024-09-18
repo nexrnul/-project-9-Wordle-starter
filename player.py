@@ -12,6 +12,9 @@ class Player:
         
 #class Character:
     #def __init__(self, skill_class, name, strength, health, inventory, exp_rate, exp=1):
+    def early_death(self, message):
+        print(f"{message}\nHAS DIED")
+        exit()
 
     def attack(self):
       print(f"{self.name} attacks for {self.strength*10} damage!")

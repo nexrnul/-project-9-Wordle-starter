@@ -1,29 +1,28 @@
 from item import Item
+from character import Character
+from player import Player
+from puzzle.py import encrypt_msg
 
 class Scene:
    def __init__(self, description):
        self.description = description
 
    def enter(self, player):
-       self.describe()
+        self.player = player
+        self.describe()
        
    def describe(self):
        print(self.description)
-
 
 class TravelS(Scene):
    def __init__(self, lore, destinations):
        super().__init__(lore)
        self.destinations = destinations
-
-
+    
    def enter(self, player):
        self.describe()
        #CODY
-       print("Paths:")
-       for index, destination in enumerate(self.destinations, 1):
-            print(f"{index}. {destination}")
-
+       print("Paths: " + ", ".join(self.destinations))
 
 class InteractionS(Scene):
     def __init__(self, lore, enemy, item):
@@ -38,28 +37,55 @@ class InteractionS(Scene):
             self.item_interaction(player)
 
     def char_interaction(self,player):
-        print(f"You encounter a {self.enemy}!!!")
-        choice = input("Defend or attack? (D/A)")
+        print(f"you encounter a {self.enemy}!!!")
+        choice = input("defend or attack? (D/A)")
         if choice == "D":
-            print("You successfully defended yourself")
+            print("you successfully defended yourself")
         if choice == "A":
             print("You successfully attack the enemy")
 
-
     def item_interaction(self, player):
         if self.item.is_special:
+            print (f" You have encountered a rare {self.item.name}")
             choice= input("Do you wish to insert it in your inventory or examine it? (I/E)")
             if choice == "I":
-                print(f"You hastily pick up the {self.item.name}... It was a trap!")
-                player.take_damage(10)
-                player.pick_up_item(self.item)
+                print(f"You hastily pick up the {self.item.name}... It was cursed!")
+                #player.take_damage(10)
+                #player.pick_up_item(self.item)
 
             elif choice == "E":
-                print(f"You disovered a {sef.item.name}...")
+                print(f"You disovered a rare{sef.item.name}...")
                 print(f"You examine it carefully: {self.item.description}")
-                print(f"As you were distracted, a ghoul lunged at your before you could react!")
-                player.take_damage(10)
+                msg = "frozen"
+                shift = 2
+                if encrypt_msg(msg, shift):
+                    self.add_to_inventory(player)
+                    print("You witness the staff glow blue and proceed to slide it out from the stone")
+                else: 
+                    player.early_death("You failed to solve the riddle and the hexxed staff struck you down from the heavens")
+
         else:   
             print(f"You discover a {self.item.name} and insert it into your inventory")
             print(f"Description: {self.item.description}")
 
+class North(InteractionS):
+    def __init__(self):
+        super().__init__((f"""You feel the air growing colder as you ascend the mountain\nAs you reach a narrow ledge, you spot a shimmering object in the distance...\nIt is the staff of Hermes, \nit is embedded into a stone. To retrieve it, you must solve a riddle carved into the rock.\nAs you reach for your knife to engrave your answer, you notice a small message embedded into the stone "{csrShift(shift, characters)} - 2"..."""),
+        None,
+        staff_of_hermes)
+        
+    def enter(self, player):
+        super().enter(player)
+        self.item_interaction(player)
+        
+#class West(Scene):
+    #def __init__(self):
+        #Scene.__init__(self, "You head west, your visibility worsening as you walk foward.")
+    #def enter(self, player):
+        #super().enter(player)
+
+#class East(Scene):
+    #def __init__(self):
+        #Scene.__init__(self, "You head east, the air growing colder as you approach the glaccier.")
+    #def enter (self, player):
+        #super().enter(player)

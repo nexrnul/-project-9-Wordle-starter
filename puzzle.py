@@ -15,11 +15,18 @@ def csrShift(inpshift, alph):
         shiftd_output.append(charshift)
     return ''.join(shiftd_output)
 
-msg = "frozen"
-shift = 2    
-key = (csrShift(shift, characters))
+#msg = "frozen"
+#shift = 2    
+#key = (csrShift(shift, characters))
 #os.system('clear')
 
+def encrypt_msg(msg, shift):
+    encrypted_msg = csrShift(shift, characters)
 
-
-
+    riddle = input("(hint: answer related to your surroundings)")
+    if riddle == msg:
+        print("Correct")
+        return True
+    else:
+        print("incorrect")
+        return False
