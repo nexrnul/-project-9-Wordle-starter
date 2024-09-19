@@ -1,9 +1,12 @@
 from item import Item
 from character import Character
 from player import Player
-from puzzle.py import encrypt_msg
+from puzzle import Puzzle
 
 class Scene:
+#Scene class represents scene or place in game. 
+ #enter() method is called when player enters the scene. 
+ #sets the player reference and calls the describe() to print the scene description.
    def __init__(self, description):
        self.description = description
 
@@ -14,78 +17,122 @@ class Scene:
    def describe(self):
        print(self.description)
 
-class TravelS(Scene):
-   def __init__(self, lore, destinations):
-       super().__init__(lore)
-       self.destinations = destinations
-    
-   def enter(self, player):
-       self.describe()
-       #CODY
-       print("Paths: " + ", ".join(self.destinations))
-
-class InteractionS(Scene):
-    def __init__(self, lore, enemy, item):
-       super().__init__(lore)
-       self.enemy = enemy
-       self.item = item
+class IntroScene(Scene):
     def enter(self, player):
-        self.describe()
-        if self.enemy:
-            self.char_interaction(player)
-        if self.item:
-            self.item_interaction(player)
-
-    def char_interaction(self,player):
-        print(f"you encounter a {self.enemy}!!!")
-        choice = input("defend or attack? (D/A)")
-        if choice == "D":
-            print("you successfully defended yourself")
-        if choice == "A":
-            print("You successfully attack the enemy")
-
-    def item_interaction(self, player):
-        if self.item.is_special:
-            print (f" You have encountered a rare {self.item.name}")
-            choice= input("Do you wish to insert it in your inventory or examine it? (I/E)")
-            if choice == "I":
-                print(f"You hastily pick up the {self.item.name}... It was cursed!")
-                #player.take_damage(10)
-                #player.pick_up_item(self.item)
-
-            elif choice == "E":
-                print(f"You disovered a rare{sef.item.name}...")
-                print(f"You examine it carefully: {self.item.description}")
-                msg = "frozen"
-                shift = 2
-                if encrypt_msg(msg, shift):
-                    self.add_to_inventory(player)
-                    print("You witness the staff glow blue and proceed to slide it out from the stone")
-                else: 
-                    player.early_death("You failed to solve the riddle and the hexxed staff struck you down from the heavens")
-
-        else:   
-            print(f"You discover a {self.item.name} and insert it into your inventory")
-            print(f"Description: {self.item.description}")
-
-class North(InteractionS):
-    def __init__(self):
-        super().__init__((f"""You feel the air growing colder as you ascend the mountain\nAs you reach a narrow ledge, you spot a shimmering object in the distance...\nIt is the staff of Hermes, \nit is embedded into a stone. To retrieve it, you must solve a riddle carved into the rock.\nAs you reach for your knife to engrave your answer, you notice a small message embedded into the stone "{csrShift(shift, characters)} - 2"..."""),
-        None,
-        staff_of_hermes)
+        print(self.description)
+        choice = input("    do you wish to travel north, or continue foward (N/F)").upper()
+        if choice == 'N':
+            return "north"
+        elif choice == 'F':
+            return "forest"
+        else:
+            print("    Invalid choice, try again.")
+            return(self.enter(player))
         
+class NorthScene(Scene):
     def enter(self, player):
-        super().enter(player)
-        self.item_interaction(player)
-        
-#class West(Scene):
-    #def __init__(self):
-        #Scene.__init__(self, "You head west, your visibility worsening as you walk foward.")
-    #def enter(self, player):
-        #super().enter(player)
+        print(self.description)
+        choice = input("    Do you want to solve the riddle and retrieve the staff? (Y/N): ").upper()
+        staff_of_hermes = Item(
+            name="Staff of Hermes",
+            description="A mystical staff that holds great power, but retrieving it requires solving an ancient riddle. You consider yourself quite lucky today as items of such caliber usually hold dangerous hexes to ward of thieves",
+            is_special=True)
+        if choice == 'Y':
+            if self.solve_riddle(player) == True:
+                print("     The staff glows blue as you pull it from the stone. You now possess the Staff of Hermes.")
+                player.pick_up_item(staff_of_hermes)
+                return "final"
+            else:
+                player.early_death("    You failed to solve the riddle, a powerful hex protecting the staff strikes you down from the heavens.")
+                return "end"
+        elif choice == 'N':
+            print("     You decide to move forward, leaving the Staff of Hermes behind.")
+            return "final"
+        else:
+            print("    Invalid choice, try again.")
+            return self.enter(player)
+    def solve_riddle(self, player):
+        encrypted_msg = Puzzle.encrypt_msg("frozen", 2)
+        msg = "frozen"
+        if encrypted_msg == msg:
+            return True
+        else:
+            return False
 
-#class East(Scene):
-    #def __init__(self):
-        #Scene.__init__(self, "You head east, the air growing colder as you approach the glaccier.")
-    #def enter (self, player):
-        #super().enter(player)
+class ForestScene(Scene):
+    def enter(self, player):
+        print(self.description)
+        choice = input("Do you want to (A)ttack or (D)efend?: ").upper()
+        if choice == 'A':
+            print("You attack the apparition.")
+            self.attack_enemy(player)
+        elif choice == 'D':
+            print("You defend against the apparition's attack.")
+            self.defend_enemy(player)
+        else:
+            print("    Invalid choice, try again.")
+            return self.enter(player)
+        return "final"
+
+    def attack_enemy(self, player):
+        if "    Mythril Sword" in player.inventory:
+            print("    With the Mythril Sword, you swiftly strike into the apparition instantly defeating it.")
+        else:
+            player.early_death("    Without a proper weapon, the apparition overwhelms you.")
+            return "end"
+
+    def defend_enemy(self, player):
+        print("     You atempt to defend, but the guardian is too strong.")
+        player.take_damage(20)
+        if player.health <= 0:
+            player.early_death("    You couldn't hold off the guardian's assault.")
+            return "end"
+
+class FinalScene(Scene):
+    def enter(self, player):
+        print(self.description)
+        if "Staff of Hermes" in player.inventory:
+            print("    You wield the Staff of Hermes and cast a powerful spell, banishing the celestial mantid.")
+            return self.game_won(player)
+        elif "Mythril Sword" in player.inventory:
+            print("    You engage the mantid with the Mythril Sword.")
+            return self.fight_mantid(player)
+        else:
+            player.early_death("    lacking anything to defend yourself, the celestial mantid overpowers you and preys upon your soul.")
+            return "end"
+
+    def fight_mantid(self, player):
+        choice = input("    Do you want to (A)ttack or (D)efend?: ").upper()
+        if choice == 'A':
+            print("    You attack the mantid.")
+            if self.battle_outcome(success=True):
+                return self.game_won(player)
+            else:
+                player.early_death("    The celestial mantid overpowers you.")
+                return "end"
+        elif choice == 'D':
+            print("    You defend against the mantid's strikes, but it's futile.")
+            player.take_damage(70)
+            if player.health <= 0:
+                player.early_death("    You couldn't hold off the celestial mantid.")
+                return "end"
+        else:
+            print("    Invalid choice, try again.")
+            return self.fight_mantid(player)
+
+    def battle_outcome(self, success):
+        #CODY ASSISTED
+        from random import randint
+        outcome = randint(0,1)
+        if outcome == 1:
+            print("""     With one final resounding blow, the celestial mantid fades into dust.
+                          The chamber falls eerily silent...
+                          Before you lays the Cosmic Egg rest upon a stone pedestal, its otherwordly glow leaves you overcome with wonder.
+                          The relic is yours at last, the key towards untold knowledge of old.""")
+            return True
+        else: 
+            return False
+
+    def game_won(self, player):
+  
+        return "end"

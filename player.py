@@ -1,41 +1,39 @@
 class Player:
+#Mostly unused code which was initally intended to be implemented-    
     def __init__(self, name, skill_class):
         self.name = name
         self.skill_class = skill_class
-        self.health = 0
-        self.strength = 0
+        self.health = 100
+        self.strength = 10
         self.inventory = []
     
     def pick_up_item(self, item):
         print("You attained a", item.name)
         self.inventory.append(item)
-        
-#class Character:
-    #def __init__(self, skill_class, name, strength, health, inventory, exp_rate, exp=1):
+    
+    #Death trigger
     def early_death(self, message):
-        print(f"{message}\nHAS DIED")
+        print(f"{message}\nYOU DIED")
         exit()
-
+        
     def attack(self):
-      print(f"{self.name} attacks for {self.strength*10} damage!")
+        print(f"{self.name} attacks for {self.strength*10} damage!")
 
     def take_damage(self, damage):
       self.health -= damage
       if self.health <= 0:
-          print(f"{self.name} has been defeated!")
+        print(f"{self.name} has been defeated!")
+        self.early_death("You have met your demise")
       else:
-          print(f"{self.name} has {self.health} health remaining.")
+        print(f"{self.name} has {self.health} health remaining.")
 
-    def add_to_inventory(item):
-        inventory.append(item)
-        print(f"{item} has been added to your inventory.")
+    #CODY ASSISTED
+    def show_inventory(self):
+        print("Your current inventory: ", ", ".join([item.name for item in self.inventory]))
 
-    def show_inventory():
-        print("Your current inventory: ", ", ".join(inventory))
-
-    def use_item(item):
-        if item in inventory:
-            print(f"You use the {item}.")
-            inventory.remove(item)
+    def use_item(self, item):
+        if item in self.inventory:
+            print(f"You use the {item.name}.")
+            self.inventory.remove(item)
         else:
-            print(f"You don't have {item} in your inventory.")
+            print(f"You don't have {item.name} in your inventory.")

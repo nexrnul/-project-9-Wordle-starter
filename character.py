@@ -1,3 +1,9 @@
+
+#Provides character class and create_player function for managing player characters
+
+#Character class handles introduction and selection of class choice. 
+# create_player creates a new player object with selected class and initializes health and strength
+
 from tabulate import tabulate
 from player import Player
 
@@ -31,5 +37,5 @@ def create_player():
         player.health=80
         player.strength=6
 
-    print(f""" "My name is {player.name} and I am of the {player.skill_class} class." """)
+    #print(f""" "My name is {player.name} and I am of the {player.skill_class} class." """)
     return player
